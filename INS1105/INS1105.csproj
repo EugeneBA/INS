@@ -42,7 +42,6 @@
     <EnableLLVM>false</EnableLLVM>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -60,14 +59,16 @@
     <EnableLLVM>false</EnableLLVM>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
+    <AndroidKeyStore>false</AndroidKeyStore>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK-1.0" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -105,28 +106,14 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_foreground.png" />
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Resources\drawable\" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\drawable\iconka3.jpg" />
-    <Content Include="Resources\drawable\back1.jpg" />
-    <AndroidResource Include="Resources\drawable\back2.png" />
-    <AndroidResource Include="Resources\drawable\back3.png" />
-    <AndroidResource Include="Resources\mipmap-hdpi\iconka.png" />
-    <AndroidResource Include="Resources\mipmap-mdpi\iconka.png" />
-    <AndroidResource Include="Resources\mipmap-xhdpi\iconka.png" />
-    <AndroidResource Include="Resources\mipmap-xxhdpi\iconka.png" />
-    <AndroidResource Include="Resources\mipmap-xxxhdpi\iconka.png" />
-    <AndroidResource Include="Resources\drawable\iconka.png" />
-    <AndroidResource Include="Resources\drawable\iconka2.jpg" />
-    <AndroidResource Include="Resources\drawable\iconka4.png" />
-    <AndroidResource Include="Resources\mipmap-hdpi\iconka4.png" />
-    <AndroidResource Include="Resources\drawable\imageproxy.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

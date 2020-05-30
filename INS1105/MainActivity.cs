@@ -42,18 +42,10 @@ namespace INS1105
 
         //   protected ImageView image;
 
-        private TextView xView;
-        private TextView yView;
-        private TextView zView;
-
-        private TextView vx;
-        private TextView vy;
-        private TextView vz;
-
-        private TextView drx;
-        private TextView dry;
-        private TextView drz;
-
+        private TextView _aView;
+        private TextView _vView;
+        private TextView _rView;
+        
         private TextView girox;
         private TextView giroy;
         private TextView giroz;
@@ -83,18 +75,10 @@ namespace INS1105
 
             msensorManager = (SensorManager)GetSystemService(Context.SensorService);
 
-            xView = (TextView)FindViewById(Resource.Id.textViewValueAccelX);
-            yView = (TextView)FindViewById(Resource.Id.textViewValueAccelY);
-            zView = (TextView)FindViewById(Resource.Id.textViewValueAccelZ);
-
-            vx = (TextView)FindViewById(Resource.Id.textViewValueVelocityX);
-            vy = (TextView)FindViewById(Resource.Id.textViewValueVelocityY);
-            vz = (TextView)FindViewById(Resource.Id.textViewValueVelocityZ);
-
-            drx = (TextView)FindViewById(Resource.Id.textViewValueMigrationX);
-            dry = (TextView)FindViewById(Resource.Id.textViewValueMigrationY);
-            drz = (TextView)FindViewById(Resource.Id.textViewValueMigrationZ);
-
+            _aView = (TextView)FindViewById(Resource.Id.textViewAValue);
+            _vView = (TextView)FindViewById(Resource.Id.textViewVValue);
+            _rView = (TextView)FindViewById(Resource.Id.textViewRValue);
+            
             QuaterionFieldX = (TextView)FindViewById(Resource.Id.textViewValueQuaternionX);
             QuaterionFieldY = (TextView)FindViewById(Resource.Id.textViewValueQuaternionY);
             QuaterionFieldZ = (TextView)FindViewById(Resource.Id.textViewValueQuaternionZ);
@@ -146,13 +130,8 @@ namespace INS1105
                 _V = Vector3d.Zero;
                 allt = 0;
 
-                vx.Text = (_V.X).ToString("0.000" + "m/s");
-                vy.Text = (_V.Y).ToString("0.000" + "m/s");
-                vz.Text = (_V.Z).ToString("0.000" + "m/s");
-
-                drx.Text = (_dR.X).ToString("0.000" + "m");
-                dry.Text = (_dR.Y).ToString("0.000" + "m");
-                drz.Text = (_dR.Z).ToString("0.000" + "m");
+                _vView.Text = $"{_V.X:#00.00}, {_V.Y:#00.00}, {_V.Z:#00.00} m/s";
+                _rView.Text = $"{_dR.X:#00.00}, {_dR.Y:#00.00}, {_dR.Z:#00.00} m";
             };
 
             calibrate.Click += delegate (object sender, EventArgs e)
@@ -172,7 +151,7 @@ namespace INS1105
         override protected void OnResume()
         {
             base.OnResume();
-            msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.LinearAcceleration), SensorDelay.Game);
+            //msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.LinearAcceleration), SensorDelay.Game);
             msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Game);
             msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.Gyroscope), SensorDelay.Game);
             msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.RotationVector), SensorDelay.Game);
@@ -180,7 +159,7 @@ namespace INS1105
         override protected void OnPause()
         {
             base.OnPause();
-            msensorManager.UnregisterListener(this, msensorManager.GetDefaultSensor(SensorType.LinearAcceleration));
+            //msensorManager.UnregisterListener(this, msensorManager.GetDefaultSensor(SensorType.LinearAcceleration));
             msensorManager.RegisterListener(this, msensorManager.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Game);
             msensorManager.UnregisterListener(this, msensorManager.GetDefaultSensor(SensorType.Gyroscope));
             msensorManager.UnregisterListener(this, msensorManager.GetDefaultSensor(SensorType.RotationVector));
@@ -316,17 +295,9 @@ namespace INS1105
             LoadNewSensorData(e);
             if (_Aclbr.HasValue)
             {
-                xView.Text = _Aclbr.Value.X.ToString("0.000" + "m/s\u00B2");
-                yView.Text = _Aclbr.Value.Y.ToString("0.000" + "m/s\u00B2");
-                zView.Text = _Aclbr.Value.Z.ToString("0.000" + "m/s\u00B2");
-
-                vx.Text = _V.X.ToString("0.000" + "m/s");
-                vy.Text = _V.Y.ToString("0.000" + "m/s");
-                vz.Text = _V.Z.ToString("0.000" + "m/s");
-
-                drx.Text = _dR.X.ToString("0.000" + "m");
-                dry.Text = _dR.Y.ToString("0.000" + "m");
-                drz.Text = _dR.Z.ToString("0.000" + "m");
+                _aView.Text = $"{_Aclbr.Value.X:#00.00}, {_Aclbr.Value.Y:#00.00}, {_Aclbr.Value.Z:#00.00} m/s\u00B2";
+                _vView.Text = $"{_V.X:#00.00}, {_V.Y:#00.00}, {_V.Z:#00.00} m/s";
+                _rView.Text = $"{_dR.X:#00.00}, {_dR.Y:#00.00}, {_dR.Z:#00.00} m";
             }
             Pitch.Text = pitch.ToString("0.00" + "°");
             Tilt.Text = tilt.ToString("0.00" + "°");
