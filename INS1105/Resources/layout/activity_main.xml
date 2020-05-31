@@ -19,17 +19,17 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewACaption"
                 android:accessibilityHeading="true"
-                android:textColor="#ff131cf7"
                 android:textStyle="normal"
                 android:textSize="23sp"
-                android:layout_marginLeft="10.0dp"/>
+                android:layout_marginLeft="10.0dp"
+                android:textColor="@android:color/holo_red_dark" />
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="30.5dp"
-                android:textColor="#000000"
                 android:id="@+id/textViewAValue"
                 android:textStyle="normal"
-                android:textSize="23dp"/>
+                android:textSize="23dp"
+                android:textColor="@android:color/holo_red_dark" />/>
         </LinearLayout>
 
         <LinearLayout
@@ -42,14 +42,14 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textViewVCaption"
                 android:accessibilityHeading="true"
-                android:textColor="#ff131cf7"
+                android:textColor="@android:color/holo_purple"
                 android:textStyle="normal"
                 android:textSize="23sp"
                 android:layout_marginLeft="10.0dp"/>
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="30.5dp"
-                android:textColor="#000000"
+                android:textColor="@android:color/holo_purple"
                 android:id="@+id/textViewVValue"
                 android:textStyle="normal"
                 android:textSize="23dp"/>
@@ -72,7 +72,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="30.5dp"
-                android:textColor="#000000"
+                android:textColor="#ff131cf7"
                 android:id="@+id/textViewRValue"
                 android:textStyle="normal"
                 android:textSize="23dp"/>
@@ -247,71 +247,32 @@
                 android:layout_height="30.5dp"
                 android:textSize="23dp"
                 android:textColor="#000000"
-                android:id="@+id/textViewValueQuaternion" 
-      />
+                android:id="@+id/textViewValueQuaternion" />
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="35dp">
             <TextView
-                android:text="Gx:"
-                android:layout_width="wrap_content"
+                android:text="w:"
+                android:layout_width="30dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/textViewGiroscopeX"
-                android:textColor="#ff131cf7"
-                android:textSize="24sp"
-                android:layout_marginLeft="10.0dp" />
+                android:id="@+id/textViewWCaption"
+                android:accessibilityHeading="true"
+                android:textColor="@android:color/holo_orange_dark"
+                android:textStyle="normal"
+                android:textSize="23sp"
+                android:layout_marginLeft="10.0dp"/>
             <TextView
-                android:text=" "
-                android:layout_width="80.0dp"
-                android:layout_height="32.5dp"
-                android:textColor="#000000"
-                android:textSize="23dp"
-                android:id="@+id/textViewValueGiroscopeX" />
+                android:layout_width="fill_parent"
+                android:layout_height="30.5dp"
+                android:textColor="@android:color/holo_orange_dark"
+                android:id="@+id/textViewWValue"
+                android:textStyle="normal"
+                android:textSize="23dp"/>
         </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="35dp">
-            <TextView
-                android:text="Gy:"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="24sp"
-                android:textColor="@android:color/holo_green_dark"
-                android:layout_marginLeft="10.0dp"
-                android:id="@+id/textView1" />
-
-            <TextView
-                android:text=" "
-                android:layout_width="80.0dp"
-                android:layout_height="32.5dp"
-                android:textColor="#000000"
-                android:textSize="23dp"
-                android:id="@+id/textViewValueGiroscopeY" />
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="35dp">
-            <TextView
-                android:text="Gz:"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10.0dp"
-                android:textSize="24sp"
-                android:textColor="@android:color/holo_red_dark"
-                android:id="@+id/textViewGiroscopeZ" />
-            <TextView
-                android:text=" "
-                android:layout_width="80.0dp"
-                android:layout_height="32.5dp"
-                android:textSize="23dp"
-                android:textColor="#000000"
-                android:id="@+id/textViewValueGiroscopeZ" />
-        </LinearLayout>
+        
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

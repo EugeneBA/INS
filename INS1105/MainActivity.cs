@@ -7,11 +7,11 @@ using Context = Android.Content.Context;
 using Android.Hardware;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Numerics;
+using System.Linq;
 using Android.Content;
 using OpenTK;
+using Environment = System.Environment;
 
 namespace INS1105
 {
@@ -23,16 +23,10 @@ namespace INS1105
         double dt; // отрезое между снятием ускорения в 2 точках
         double allt; //все время 
         long lasttime;
-        
+
         protected SensorManager msensorManager;
 
         static MadgwickAHRS AHRS = new MadgwickAHRS(1f / 256f, 5f);
-
-
-        private double[] accelDataCalibrate;
-        private double[] giroscopeData;
-        private double pitch, tilt, azimuth;
-        //  private double[] accelDataClbr;
 
         protected Button start;
         protected Button stop;
@@ -45,10 +39,8 @@ namespace INS1105
         private TextView _aView;
         private TextView _vView;
         private TextView _rView;
-        
-        private TextView girox;
-        private TextView giroy;
-        private TextView giroz;
+
+        private TextView _wView;
 
         public TextView QuaterionFieldX;
         public TextView QuaterionFieldY;
@@ -78,7 +70,7 @@ namespace INS1105
             _aView = (TextView)FindViewById(Resource.Id.textViewAValue);
             _vView = (TextView)FindViewById(Resource.Id.textViewVValue);
             _rView = (TextView)FindViewById(Resource.Id.textViewRValue);
-            
+
             QuaterionFieldX = (TextView)FindViewById(Resource.Id.textViewValueQuaternionX);
             QuaterionFieldY = (TextView)FindViewById(Resource.Id.textViewValueQuaternionY);
             QuaterionFieldZ = (TextView)FindViewById(Resource.Id.textViewValueQuaternionZ);
@@ -92,9 +84,7 @@ namespace INS1105
             TiltMadj = (TextView)FindViewById(Resource.Id.textViewTiltMadj);
             AzimuthMadj = (TextView)FindViewById(Resource.Id.textViewAzimuthMadj);
 
-            girox = (TextView)FindViewById(Resource.Id.textViewValueGiroscopeX);
-            giroy = (TextView)FindViewById(Resource.Id.textViewValueGiroscopeY);
-            giroz = (TextView)FindViewById(Resource.Id.textViewValueGiroscopeZ);
+            _wView = (TextView)FindViewById(Resource.Id.textViewWValue);
 
             start = FindViewById<Button>(Resource.Id.buttonSet0);
             stop = FindViewById<Button>(Resource.Id.buttonStop);
@@ -102,17 +92,6 @@ namespace INS1105
             calibrate = FindViewById<Button>(Resource.Id.buttonCalibrate);
             write = FindViewById<Button>(Resource.Id.buttonWrite);
 
-            /*
-                < ImageView
-                android: id = "id/imageVieww"
-                android: layout_width = "wrap_content"
-                android: layout_height = "400dp"
-                android: src = "@drawable/imageproxy"
-                android: layout_marginTop = "0.0dp"
-             />
-                 image = FindViewById<ImageView>(Resource.Id.imageVieww);
-                image.SetImageResource(Resource.Drawable.imageproxy);
-            */
             start.Click += delegate (object sender, EventArgs e)
             {
                 start.Text = "Running...";
@@ -130,8 +109,8 @@ namespace INS1105
                 _V = Vector3d.Zero;
                 allt = 0;
 
-                _vView.Text = $"{_V.X:#00.00}, {_V.Y:#00.00}, {_V.Z:#00.00} m/s";
-                _rView.Text = $"{_dR.X:#00.00}, {_dR.Y:#00.00}, {_dR.Z:#00.00} m";
+                _vView.Text = $"{_V.X:#00.00}; {_V.Y:#00.00}; {_V.Z:#00.00} m/s";
+                _rView.Text = $"{_dR.X:#00.00}; {_dR.Y:#00.00}; {_dR.Z:#00.00} m";
             };
 
             calibrate.Click += delegate (object sender, EventArgs e)
@@ -144,7 +123,7 @@ namespace INS1105
             write.Click += delegate (object sender, EventArgs e)
             {
                 write.Text = "Writing...";
-                WriteFile();
+                _AtoFile = !_AtoFile;
             };
         }
 
@@ -167,7 +146,7 @@ namespace INS1105
         }
 
         private const int AveargeCount = 50; // Будем калибровать только вручную
-        int _averageCounter = AveargeCount+1;
+        int _averageCounter = AveargeCount + 1;
 
         Vector3d _sumA = Vector3d.Zero;
         Vector3d _clbrA = Vector3d.Zero;
@@ -177,14 +156,16 @@ namespace INS1105
         private Vector3d _V = Vector3d.Zero;
         private Vector3d _dR = Vector3d.Zero;
 
+        private Vector3d? _W = Vector3d.Zero;
 
+        private double pitch, tilt, azimuth;
         public double[] g = null;
         private void LoadNewSensorData(SensorEvent e)
         {
             var type = e.Sensor.Type; //Определяем тип датчика
             if (type == SensorType.Gyroscope)
             {
-                giroscopeData = ToArray(e.Values);
+                _W = ToVector3d(e.Values);
             }
 
             if (type == SensorType.RotationVector)
@@ -247,6 +228,35 @@ namespace INS1105
 
         public void OnAccuracyChanged(Sensor sensor, [GeneratedEnum] SensorStatus accuracy)
         { }
+
+        private bool _AtoFile = false;
+
+        private void WriteAtoFile()
+        {
+            if (!_AtoFile)
+                return;
+
+            if (_Aclbr.HasValue)
+                WriteToFile("insA.txt", $"{lasttime}\t{dt}\t{_Aclbr.Value.X}\t{_Aclbr.Value.Y}\t{_Aclbr.Value.Z}");
+        }
+
+        private void WriteToFile(string fileName, string content)
+        {
+            try
+            {
+                string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), fileName);
+
+                using (var streamWriter = new StreamWriter(filename, true))
+                {
+                    streamWriter.WriteLine(DateTime.UtcNow);
+                }
+            }
+            catch (Exception eч)
+            {
+            }
+        }
+
+
         public void WriteFile()
         {
             String FILENAME = "YULIA";
@@ -295,24 +305,22 @@ namespace INS1105
             LoadNewSensorData(e);
             if (_Aclbr.HasValue)
             {
-                _aView.Text = $"{_Aclbr.Value.X:#00.00}, {_Aclbr.Value.Y:#00.00}, {_Aclbr.Value.Z:#00.00} m/s\u00B2";
-                _vView.Text = $"{_V.X:#00.00}, {_V.Y:#00.00}, {_V.Z:#00.00} m/s";
-                _rView.Text = $"{_dR.X:#00.00}, {_dR.Y:#00.00}, {_dR.Z:#00.00} m";
+                _aView.Text = $"{_Aclbr.Value.X:#00.00}; {_Aclbr.Value.Y:#00.00}; {_Aclbr.Value.Z:#00.00} m/s\u00B2";
+                _vView.Text = $"{_V.X:#00.00}; {_V.Y:#00.00}; {_V.Z:#00.00} m/s";
+                _rView.Text = $"{_dR.X:#00.00}; {_dR.Y:#00.00}; {_dR.Z:#00.00} m";
             }
             Pitch.Text = pitch.ToString("0.00" + "°");
             Tilt.Text = tilt.ToString("0.00" + "°");
             Azimuth.Text = azimuth.ToString("0.00" + "°");
 
-            if (giroscopeData != null)
+            if (_W.HasValue)
             {
-                girox.Text = (giroscopeData[0]).ToString("0.000");
-                giroy.Text = (giroscopeData[1]).ToString("0.000");
-                giroz.Text = (giroscopeData[2]).ToString("0.000");
+                _wView.Text = $"{_W.Value.X:#00.00}; {_W.Value.Y:#00.00}; {_W.Value.Z:#00.00} rad/s";
             }
 
-            if (giroscopeData != null && _Aclbr.HasValue)
+            if (_W.HasValue && _Aclbr.HasValue)
             {
-                AHRS.Update(deg2rad(giroscopeData[0]), deg2rad(giroscopeData[1]), deg2rad(giroscopeData[2]), _Aclbr.Value);
+                AHRS.Update(_W.Value, _Aclbr.Value);
 
                 QuaterionFieldX.Text = (AHRS.Quaternion[0]).ToString("0.000");
                 QuaterionFieldY.Text = (AHRS.Quaternion[1]).ToString("0.000");
@@ -331,6 +339,8 @@ namespace INS1105
                     return (double)(Math.PI / 180) * degrees;
                 }
             }
+
+            WriteAtoFile();
         }
 
         double[] ToArray(IEnumerable<float> values)
@@ -419,8 +429,12 @@ namespace INS1105
         /// Measurement in radians/s.
         /// Optimised for minimal arithmetic. Total ±: 45. Total *: 85. Total /: 3. Total sqrt: 3
 
-        public void Update(double gx, double gy, double gz, Vector3d a)
+        public void Update(Vector3d gw, Vector3d a)
         {
+            double gx = gw.X;
+            double gy = gw.Y;
+            double gz = gw.Z;
+
             double ax = a.X;
             double ay = a.Y;
             double az = a.Z;
