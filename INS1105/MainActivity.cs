@@ -10,8 +10,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Android.Content;
+using Android.Content.PM;
 using OpenTK;
 using Environment = System.Environment;
+using Android.Support.V4.App;
+using Android;
 
 namespace INS1105
 {
@@ -120,10 +123,25 @@ namespace INS1105
                 _averageCounter = 0;
             };
 
-            write.Click += delegate (object sender, EventArgs e)
+            write.Click += delegate(object sender, EventArgs e)
             {
                 write.Text = "Writing...";
-                _AtoFile = !_AtoFile;
+
+                if (_AtoFile)
+                {
+                    _AtoFile = false;
+                    return;
+                }
+
+                if (ActivityCompat.CheckSelfPermission(this, Manifest.Permission.WriteExternalStorage) != (int) Permission.Granted)
+                {
+                    // Camera permission has not been granted
+                    ActivityCompat.RequestPermissions(this, new []{ Manifest.Permission.WriteExternalStorage }, 0);
+                }
+                else
+                {
+                    _AtoFile = true;
+                }
             };
         }
 
@@ -244,14 +262,14 @@ namespace INS1105
         {
             try
             {
-                string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), fileName);
+                string filename = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath, fileName);
 
                 using (var streamWriter = new StreamWriter(filename, true))
                 {
-                    streamWriter.WriteLine(DateTime.UtcNow);
+                    streamWriter.WriteLine(content);
                 }
             }
-            catch (Exception eч)
+            catch (Exception ex)
             {
             }
         }
